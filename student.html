@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RubriqAI - Student Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #0a0a0a;
+            color: #fff;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            text-align: center;
+            padding: 2rem 0 3rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 200;
+            letter-spacing: 0.3em;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            font-size: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            font-family: inherit;
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        button {
+            padding: 1rem 2rem;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-radius: 6px;
+            width: 100%;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #fff;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-label {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .question {
+            margin: 2rem 0;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .question:last-child {
+            border-bottom: none;
+        }
+
+        .question-num {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+            margin-bottom: 0.5rem;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+        }
+
+        .timer {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            font-size: 1.2rem;
+            letter-spacing: 0.1em;
+        }
+
+        .timer.warning {
+            border-color: #ff6b6b;
+            background: rgba(255, 107, 107, 0.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .success {
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            margin-bottom: 2rem;
+        }
+
+        .char-count {
+            text-align: right;
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.8rem;
+            margin-top: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .timer {
+                position: static;
+                margin: 1rem 0;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>RUBRIQAI</h1>
+            <p class="subtitle">STUDENT PORTAL</p>
+        </header>
+
+        <!-- Step 1: Enter Code -->
+        <div id="code-screen" class="card">
+            <h2 style="font-weight: 200; margin-bottom: 2rem; text-align: center;">Enter Test Code</h2>
+            <input type="text" id="test-code" placeholder="TEST-2024-XXXX"
+                style="text-align: center; text-transform: uppercase;">
+            <button onclick="loadTest()">Load Test</button>
+            <p style="color: rgba(255, 255, 255, 0.3); font-size: 0.8rem; margin-top: 1rem; text-align: center;">
+                Get test code from your teacher
+            </p>
+        </div>
+
+        <!-- Step 2: Test Info -->
+        <div id="info-screen" class="card hidden">
+            <h2 id="test-title" style="font-weight: 300; margin-bottom: 2rem;"></h2>
+            <div class="info-row">
+                <span class="info-label">Subject</span>
+                <span id="test-subject"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Duration</span>
+                <span id="test-duration"></span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Questions</span>
+                <span id="test-questions"></span>
+            </div>
+            <div style="margin-top: 2rem;">
+                <input type="text" id="student-name" placeholder="Your Full Name *">
+                <input type="email" id="student-email" placeholder="Email (optional)">
+                <button onclick="startTest()">Start Test</button>
+            </div>
+        </div>
+
+        <!-- Step 3: Taking Test -->
+        <div id="test-screen" class="hidden">
+            <div class="timer" id="timer">60:00</div>
+            <div id="questions-container"></div>
+            <div style="text-align: center; margin: 3rem 0;">
+                <button onclick="submitTest()">Submit Test</button>
+            </div>
+        </div>
+
+        <!-- Step 4: Success -->
+        <div id="success-screen" class="card hidden success">
+            <div class="success-icon">✓</div>
+            <h2 style="font-weight: 200;">Test Submitted</h2>
+            <p style="color: rgba(255, 255, 255, 0.5); margin-top: 1rem;">
+                Your answers have been recorded successfully
+            </p>
+        </div>
+    </div>
+
+    <script>
+        let testData = null;
+        let testCode = null;
+        let startTime = null;
+        let timerInterval = null;
+
+        async function loadTest() {
+            testCode = document.getElementById('test-code').value.trim().toUpperCase();
+
+            if (!testCode) {
+                alert('Please enter a test code');
+                return;
+            }
+
+            try {
+                const response = await fetch(`http://localhost:8502/test/${testCode}`);
+
+                if (!response.ok) {
+                    alert('Invalid test code or test not found');
+                    return;
+                }
+
+                testData = await response.json();
+                showTestInfo();
+            } catch (error) {
+                alert('Error: Make sure the API server is running (python3 api_simple.py)');
+                console.error(error);
+            }
+        }
+
+        function showTestInfo() {
+            document.getElementById('code-screen').classList.add('hidden');
+            document.getElementById('info-screen').classList.remove('hidden');
+
+            document.getElementById('test-title').textContent = testData.title;
+            document.getElementById('test-subject').textContent = testData.subject || 'General';
+            document.getElementById('test-duration').textContent = testData.duration + ' minutes';
+            document.getElementById('test-questions').textContent = testData.questions.length;
+        }
+
+        function startTest() {
+            const name = document.getElementById('student-name').value.trim();
+
+            if (!name) {
+                alert('Please enter your name');
+                return;
+            }
+
+            document.getElementById('info-screen').classList.add('hidden');
+            document.getElementById('test-screen').classList.remove('hidden');
+
+            startTime = Date.now();
+            startTimer(testData.duration);
+            renderQuestions();
+        }
+
+        function startTimer(minutes) {
+            let timeLeft = minutes * 60;
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                const display = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+
+                const timerEl = document.getElementById('timer');
+                timerEl.textContent = display;
+
+                if (timeLeft <= 300) {
+                    timerEl.classList.add('warning');
+                }
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    submitTest();
+                }
+            }, 1000);
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            testData.questions.forEach(q => {
+                const qDiv = document.createElement('div');
+                qDiv.className = 'question';
+                qDiv.innerHTML = `
+                    <div class="question-num">QUESTION ${q.number}</div>
+                    <div class="question-text">${q.text}</div>
+                    <textarea 
+                        id="answer-${q.number}" 
+                        placeholder="Type your answer here..."
+                        oninput="updateCharCount(${q.number})"
+                    ></textarea>
+                    <div class="char-count" id="char-${q.number}">0 characters</div>
+                `;
+                container.appendChild(qDiv);
+            });
+        }
+
+        function updateCharCount(qNum) {
+            const textarea = document.getElementById(`answer-${qNum}`);
+            const count = textarea.value.length;
+            document.getElementById(`char-${qNum}`).textContent = `${count} characters`;
+        }
+
+        async function submitTest() {
+            clearInterval(timerInterval);
+
+            const answers = {};
+            testData.questions.forEach(q => {
+                answers[q.number] = document.getElementById(`answer-${q.number}`).value;
+            });
+
+            const timeTaken = Math.floor((Date.now() - startTime) / 1000 / 60);
+
+            const submission = {
+                test_code: testCode,
+                student_name: document.getElementById('student-name').value,
+                student_email: document.getElementById('student-email').value,
+                answers: answers,
+                time_taken: timeTaken
+            };
+
+            try {
+                const response = await fetch('http://localhost:8502/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(submission)
+                });
+
+                if (response.ok) {
+                    document.getElementById('test-screen').classList.add('hidden');
+                    document.getElementById('success-screen').classList.remove('hidden');
+                } else {
+                    alert('Error submitting test. Please try again.');
+                }
+            } catch (error) {
+                alert('Error: Could not connect to server');
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+
+</html>
