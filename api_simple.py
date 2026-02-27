@@ -10,8 +10,10 @@ from urllib.parse import urlparse
 from datetime import datetime
 import sys
 import errno
+import os
 
-PORT = 8502
+# Railway injects $PORT automatically; fall back to 8502 for local dev
+PORT = int(os.environ.get("PORT", 8502))
 
 class ReusableHTTPServer(HTTPServer):
     allow_reuse_address = True
