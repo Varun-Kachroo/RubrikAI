@@ -460,7 +460,7 @@ def render_teacher_test_creator():
                     # Share instructions
                     st.markdown("---")
                     st.markdown("### 📤 Share with Students")
-                    st.code(f"Test Code: {test_code}\nStudent Portal: http://localhost:8000/student.html")
+                    st.code(f"Test Code: {test_code}\nStudent Portal: https://rubriqai.vercel.app/student.html")
                     
                 except Exception as e:
                     st.error(f"❌ Error creating test: {str(e)}")

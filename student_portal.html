@@ -262,7 +262,7 @@
             }
 
             try {
-                const response = await fetch(`http://localhost:8502/test/${testCode}`);
+                const response = await fetch(`https://lavish-grace-production.up.railway.app/test/${testCode}`);
 
                 if (!response.ok) {
                     alert('Invalid test code or test not found');
@@ -373,7 +373,7 @@
             };
 
             try {
-                const response = await fetch('http://localhost:8502/submit', {
+                const response = await fetch('https://lavish-grace-production.up.railway.app/submit', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
