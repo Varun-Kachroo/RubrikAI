@@ -320,11 +320,30 @@ class TestHosting:
 # Streamlit UI Components
 
 def render_teacher_test_creator():
-    """UI for teachers to create online tests with scheduling"""
+    """UI for teachers to create online tests with scheduling - FIXED DYNAMIC QUESTIONS"""
     st.subheader("📝 Create Online Test")
     
     hosting = TestHosting()
     
+    # ═════════════════════════════════════════════════════════════
+    # ✅ FIX: Number of questions OUTSIDE form for immediate update
+    # This makes boxes appear instantly when you change the number
+    # ═════════════════════════════════════════════════════════════
+    
+    st.write("**How many questions do you want to add?**")
+    num_questions = st.number_input(
+        "Number of questions", 
+        min_value=1, 
+        max_value=20, 
+        value=3,
+        key="num_questions_input_dynamic",
+        help="👆 Change this number and question boxes will appear immediately below"
+    )
+    
+    st.caption(f"✅ {num_questions} question box(es) will be shown below")
+    st.markdown("---")
+    
+    # Now start the form
     with st.form("create_test_form"):
         st.write("**Basic Information:**")
         title = st.text_input("Test Title *", placeholder="Biology Midterm Exam")
@@ -358,13 +377,22 @@ def render_teacher_test_creator():
             st.info("💡 Test will go live immediately and stay open until manually closed")
         
         st.markdown("---")
-        st.write("**Questions:**")
+        st.write(f"**📝 Enter Your {num_questions} Question(s):**")
+        st.caption("Fill in all questions below")
         
-        num_questions = st.number_input("Number of questions", min_value=1, max_value=20, value=3)
+        # ═════════════════════════════════════════════════════════════
+        # ✅ FIX: Generate questions dynamically based on num_questions
+        # Uses int() to ensure it's a number, creates unique keys
+        # ═════════════════════════════════════════════════════════════
         
         questions = []
-        for i in range(num_questions):
-            q = st.text_area(f"Question {i+1} *", key=f"q_{i}", placeholder="Enter your question here...")
+        for i in range(int(num_questions)):
+            q = st.text_area(
+                f"Question {i+1} *", 
+                key=f"test_question_{i}",  # Unique key for each question
+                placeholder=f"Enter question {i+1} here...",
+                height=100
+            )
             if q.strip():
                 questions.append(q.strip())
         
@@ -388,9 +416,17 @@ def render_teacher_test_creator():
         
         submitted = st.form_submit_button("🚀 Create Test", type="primary", use_container_width=True)
         
+        # ═════════════════════════════════════════════════════════════
+        # ✅ FIX: Better validation - check if all questions filled
+        # ═════════════════════════════════════════════════════════════
+        
         if submitted:
-            if not title or not questions:
-                st.error("❌ Please enter title and at least one question!")
+            if not title:
+                st.error("❌ Please enter a test title!")
+            elif len(questions) == 0:
+                st.error(f"❌ Please fill in at least one question!")
+            elif len(questions) < num_questions:
+                st.warning(f"⚠️ You selected {num_questions} questions but only filled {len(questions)}. Please fill all {num_questions} question boxes!")
             elif rubric_df.empty or rubric_df['CRITERIA'].isna().any():
                 st.error("❌ Please set up a valid rubric!")
             elif schedule_test and closes_at and closes_at <= starts_at:
@@ -421,8 +457,15 @@ def render_teacher_test_creator():
                     
                     st.info(f"✅ {len(questions)} questions • {duration} minutes • {subject or 'General'}")
                     
+                    # Share instructions
+                    st.markdown("---")
+                    st.markdown("### 📤 Share with Students")
+                    st.code(f"Test Code: {test_code}\nStudent Portal: http://localhost:8000/student.html")
+                    
                 except Exception as e:
                     st.error(f"❌ Error creating test: {str(e)}")
+                    import traceback
+                    st.code(traceback.format_exc())
 
 
 def render_teacher_test_manager():

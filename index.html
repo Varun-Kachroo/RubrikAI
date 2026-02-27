@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RubriqAI</title>
+    <title>RubriqAI - Grade Smarter</title>
     <style>
         * {
             margin: 0;
@@ -13,33 +13,15 @@
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: #000;
             color: #fff;
-            overflow-x: hidden;
-            cursor: none;
+            min-height: 100vh;
+            overflow: hidden;
         }
 
-        /* Custom Cursor */
-        .cursor {
-            width: 20px;
-            height: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            position: fixed;
-            pointer-events: none;
-            z-index: 9999;
-            mix-blend-mode: difference;
-            transition: transform 0.2s ease;
-        }
-
-        .cursor.active {
-            transform: scale(2.5);
-            border-width: 2px;
-        }
-
-        /* Canvas Background */
-        #canvas {
+        /* Particle Animation Background */
+        #particles {
             position: fixed;
             top: 0;
             left: 0;
@@ -48,367 +30,231 @@
             z-index: 0;
         }
 
-        /* Container */
         .container {
             position: relative;
             z-index: 1;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             padding: 2rem;
         }
 
-        /* Logo */
         .logo {
-            position: fixed;
-            top: 3rem;
-            left: 3rem;
-            font-size: 1.2rem;
-            font-weight: 200;
+            font-size: 0.9rem;
             letter-spacing: 0.5em;
-            z-index: 100;
-            mix-blend-mode: difference;
-        }
-
-        /* Main Content */
-        .hero {
-            text-align: center;
-            max-width: 1000px;
+            margin-bottom: 2rem;
+            opacity: 0.7;
         }
 
         h1 {
-            font-size: clamp(4rem, 15vw, 12rem);
+            font-size: 6rem;
             font-weight: 100;
-            line-height: 0.85;
-            margin-bottom: 3rem;
-            letter-spacing: -0.05em;
-            opacity: 0;
-            animation: fadeIn 2s ease-out 0.5s forwards;
+            letter-spacing: 0.2em;
+            margin-bottom: 0.5rem;
+            line-height: 1.1;
+            text-align: center;
         }
 
         .subtitle {
-            font-size: clamp(1.2rem, 2.5vw, 2rem);
-            font-weight: 200;
-            color: rgba(255, 255, 255, 0.5);
-            margin-bottom: 5rem;
-            letter-spacing: 0.1em;
-            opacity: 0;
-            animation: fadeIn 2s ease-out 1.2s forwards;
+            font-size: 1.2rem;
+            letter-spacing: 0.3em;
+            opacity: 0.5;
+            margin-bottom: 4rem;
+            text-align: center;
         }
 
-        /* Enter Link */
-        .enter {
-            display: inline-block;
-            padding: 2rem 5rem;
-            font-size: 0.75rem;
-            font-weight: 200;
-            letter-spacing: 0.5em;
-            text-transform: uppercase;
-            text-decoration: none;
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .buttons {
+            display: flex;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .button {
             position: relative;
+            padding: 1.2rem 3rem;
+            font-size: 1rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: #fff;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             overflow: hidden;
-            opacity: 0;
-            animation: fadeIn 2s ease-out 2s forwards;
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .enter::before {
+        .button::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .enter:hover {
-            border-color: rgba(255, 255, 255, 0.8);
-            letter-spacing: 0.6em;
-        }
-
-        .enter:hover::before {
-            left: 0;
-        }
-
-        /* Bottom Info */
-        .info {
-            position: fixed;
-            bottom: 3rem;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 4rem;
-            font-size: 0.65rem;
-            letter-spacing: 0.3em;
-            text-transform: uppercase;
-            opacity: 0;
-            animation: fadeIn 2s ease-out 2.5s forwards;
-        }
-
-        .info-item {
-            color: rgba(255, 255, 255, 0.3);
-            transition: color 0.3s;
-        }
-
-        .info-item:hover {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Side Text */
-        .side {
-            position: fixed;
-            right: 3rem;
             top: 50%;
-            transform: translateY(-50%) rotate(90deg);
-            font-size: 0.65rem;
-            letter-spacing: 0.4em;
-            color: rgba(255, 255, 255, 0.2);
-            opacity: 0;
-            animation: fadeIn 2s ease-out 3s forwards;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
         }
 
-        /* Animations */
-        @keyframes fadeIn {
-            to {
-                opacity: 1;
-            }
+        .button:hover::before {
+            width: 300px;
+            height: 300px;
         }
 
-        /* Grain Overlay */
-        body::after {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image:
-                repeating-linear-gradient(0deg,
-                    transparent,
-                    transparent 1px,
-                    rgba(255, 255, 255, 0.01) 1px,
-                    rgba(255, 255, 255, 0.01) 2px);
-            pointer-events: none;
-            z-index: 1000;
-            opacity: 0.4;
+        .button:hover {
+            border-color: rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-2px);
         }
 
-        /* Mobile Adjustments */
+        .button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .button-primary {
+            background: rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.4);
+        }
+
+        .button-primary:hover {
+            background: rgba(99, 102, 241, 0.3);
+            border-color: rgba(99, 102, 241, 0.6);
+        }
+
+        .button-secondary {
+            background: rgba(236, 72, 153, 0.2);
+            border-color: rgba(236, 72, 153, 0.4);
+        }
+
+        .button-secondary:hover {
+            background: rgba(236, 72, 153, 0.3);
+            border-color: rgba(236, 72, 153, 0.6);
+        }
+
         @media (max-width: 768px) {
-            body {
-                cursor: auto;
+            h1 {
+                font-size: 3rem;
             }
 
-            .cursor {
-                display: none;
-            }
-
-            .logo {
-                top: 2rem;
-                left: 2rem;
-                font-size: 1rem;
-                letter-spacing: 0.3em;
-            }
-
-            .enter {
-                padding: 1.5rem 3rem;
-                font-size: 0.7rem;
-            }
-
-            .info {
+            .buttons {
                 flex-direction: column;
-                gap: 1.5rem;
-                align-items: center;
-                bottom: 2rem;
+                gap: 1rem;
+                width: 100%;
+                max-width: 300px;
             }
 
-            .side {
-                display: none;
+            .button {
+                width: 100%;
+                text-align: center;
             }
         }
     </style>
 </head>
 
 <body>
-    <!-- Custom Cursor -->
-    <div class="cursor"></div>
+    <canvas id="particles"></canvas>
 
-    <!-- Canvas for Abstract Art -->
-    <canvas id="canvas"></canvas>
-
-    <!-- Logo -->
-    <div class="logo">RUBRIQAI</div>
-
-    <!-- Main Content -->
     <div class="container">
-        <div class="hero">
-            <h1>GRADE<br>SMARTER</h1>
-            <p class="subtitle">AI EVALUATION IN SECONDS</p>
-            <a href="http://localhost:8501" class="enter">Launch</a>
+        <div class="logo">RUBRIQAI</div>
+
+        <h1>GRADE<br>SMARTER</h1>
+
+        <p class="subtitle">AI EVALUATION IN SECONDS</p>
+
+        <div class="buttons">
+            <a href="https://YOUR-RAILWAY-URL.up.railway.app" class="button button-primary">
+                <span>RUBRIQ AI</span>
+            </a>
+
+            <a href="/student.html" class="button button-secondary">
+                <span>TEST CORNER</span>
+            </a>
         </div>
     </div>
 
-    <!-- Bottom Info -->
-    <div class="info">
-        <span class="info-item">AI Grading</span>
-        <span class="info-item">Batch Process</span>
-        <span class="info-item">90% Faster</span>
-    </div>
-
-    <!-- Side Text -->
-    <div class="side">INTELLIGENT GRADING SYSTEM</div>
-
     <script>
-        // Custom Cursor Movement
-        const cursor = document.querySelector('.cursor');
-        const interactives = document.querySelectorAll('a, .info-item');
-
-        let mouseX = 0, mouseY = 0;
-        let cursorX = 0, cursorY = 0;
-
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
-
-        function animateCursor() {
-            cursorX += (mouseX - cursorX) * 0.1;
-            cursorY += (mouseY - cursorY) * 0.1;
-
-            cursor.style.left = cursorX + 'px';
-            cursor.style.top = cursorY + 'px';
-
-            requestAnimationFrame(animateCursor);
-        }
-
-        animateCursor();
-
-        interactives.forEach(item => {
-            item.addEventListener('mouseenter', () => cursor.classList.add('active'));
-            item.addEventListener('mouseleave', () => cursor.classList.remove('active'));
-        });
-
-        // Canvas Abstract Art
-        const canvas = document.getElementById('canvas');
+        // Particle Animation
+        const canvas = document.getElementById('particles');
         const ctx = canvas.getContext('2d');
 
-        let w, h;
-        let particles = [];
-        let mouse = { x: 0, y: 0 };
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
 
-        function resize() {
-            w = canvas.width = window.innerWidth;
-            h = canvas.height = window.innerHeight;
-        }
+        const particles = [];
+        const particleCount = 100;
+        const connectionDistance = 150;
 
-        window.addEventListener('resize', resize);
-        resize();
-
-        // Particle System
         class Particle {
             constructor() {
-                this.reset();
-            }
-
-            reset() {
-                this.x = Math.random() * w;
-                this.y = Math.random() * h;
-                this.vx = (Math.random() - 0.5) * 0.3;
-                this.vy = (Math.random() - 0.5) * 0.3;
-                this.size = Math.random() * 1.5 + 0.5;
-                this.life = Math.random() * 0.5 + 0.5;
-                this.maxLife = this.life;
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.5;
+                this.vy = (Math.random() - 0.5) * 0.5;
+                this.radius = Math.random() * 2 + 1;
             }
 
             update() {
                 this.x += this.vx;
                 this.y += this.vy;
-                this.life -= 0.002;
 
-                // Bounce off edges
-                if (this.x < 0 || this.x > w) this.vx *= -1;
-                if (this.y < 0 || this.y > h) this.vy *= -1;
-
-                // Mouse interaction
-                const dx = this.x - mouse.x;
-                const dy = this.y - mouse.y;
-                const dist = Math.sqrt(dx * dx + dy * dy);
-
-                if (dist < 120) {
-                    const force = (120 - dist) / 120;
-                    this.x += (dx / dist) * force * 3;
-                    this.y += (dy / dist) * force * 3;
-                }
-
-                if (this.life <= 0) {
-                    this.reset();
-                }
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
             }
 
             draw() {
-                const opacity = (this.life / this.maxLife) * 0.25;
-                ctx.fillStyle = `rgba(255, 255, 255, ${opacity})`;
                 ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
                 ctx.fill();
             }
         }
 
         // Initialize particles
-        for (let i = 0; i < 120; i++) {
+        for (let i = 0; i < particleCount; i++) {
             particles.push(new Particle());
         }
 
-        // Draw connections between nearby particles
-        function drawConnections() {
+        // Animation loop
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Update and draw particles
+            particles.forEach(particle => {
+                particle.update();
+                particle.draw();
+            });
+
+            // Draw connections
             for (let i = 0; i < particles.length; i++) {
                 for (let j = i + 1; j < particles.length; j++) {
                     const dx = particles[i].x - particles[j].x;
                     const dy = particles[i].y - particles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    const distance = Math.sqrt(dx * dx + dy * dy);
 
-                    if (dist < 120) {
-                        const opacity = (1 - dist / 120) * 0.08;
-                        ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
-                        ctx.lineWidth = 0.5;
+                    if (distance < connectionDistance) {
                         ctx.beginPath();
                         ctx.moveTo(particles[i].x, particles[i].y);
                         ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.2 * (1 - distance / connectionDistance)})`;
                         ctx.stroke();
                     }
                 }
             }
-        }
-
-        // Track mouse position
-        document.addEventListener('mousemove', (e) => {
-            mouse.x = e.clientX;
-            mouse.y = e.clientY;
-        });
-
-        // Animation loop
-        function animate() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
-            ctx.fillRect(0, 0, w, h);
-
-            particles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-
-            drawConnections();
 
             requestAnimationFrame(animate);
         }
 
-        // Start
         animate();
+
+        // Resize handler
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        });
     </script>
 </body>
 
